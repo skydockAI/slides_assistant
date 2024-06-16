@@ -1,0 +1,5 @@
+openai == 1.30.4
+chainlit == 1.1.202
+python-pptx == 0.6.23
+python-docx == 1.1.0
+PyPDF2 == 3.0.1

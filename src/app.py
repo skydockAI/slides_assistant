@@ -16,17 +16,8 @@ AZURE_OPENAI_ENDPOINT =  os.getenv("AZURE_OPENAI_ENDPOINT")
 AZURE_OPENAI_VERSION =  os.getenv("AZURE_OPENAI_VERSION")
 GPT_MODEL = os.getenv("GPT_MODEL")
 TEMPERATURE = float(os.getenv("TEMPERATURE"))
-
-SYSTEM_PROMPT='''
-You are an AI assistant that helps user to create PowerPoint presentation for a specific topic or basing on provided information.
-Here is the process:
-- Step 1: You ask the user for the topic or information for the presentation.
-- Step 2: You suggest the title and detailed contents for each slide of the presentation.
-- Step 3: You ask the user if they want to make the presentation longer or shorter. You update the presentation contents basing on the user's feedback. Repeat this step until the user is OK.
-- Step 4: You ask the user if they want to generate the presentation file now or review each slide of the presentation. Go to step 6 if the user want to generate the presentation file now. Go to step 5 if the user want to review each slide. 
-- Step 5: You go through each slide of the presentation and ask the user if they are OK with the slide. You update the slide contents basing on the user's feedback. Repeat this step until the user is OK.
-- Step 6: You use function calling (tools call) to generate the presentation with the contents that have been finalized.
-'''
+with open("system_prompt.txt", 'r', encoding='utf-8') as file:
+    SYSTEM_PROMPT = file.read()
 
 TEMPLATE_FILE = os.getenv("TEMPLATE_FILE")
 TITLE_TEMPLATE_SLIDE_INDEX = int(os.getenv("TITLE_TEMPLATE_SLIDE_INDEX"))
@@ -108,9 +99,7 @@ async def main(message: cl.Message):
         if function_name == "generate_presentation":
             try:
                 topic = arguments["topic"]
-                print(topic)
                 slide_data = arguments["slide_data"]
-                print(slide_data)
                 generated_file_path = await cl.make_async(create_powerpoint_file)(topic, slide_data, f'{TEMP_FILES_FOLDER}/{cl.user_session.get("id")}')
                 attached_file = cl.File(name=topic, path=generated_file_path, display="inline")
                 response_msg.elements = [attached_file]
